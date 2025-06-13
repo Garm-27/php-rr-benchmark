@@ -55,7 +55,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: . # Context is the root of the checked-out repository (php-rr-benchmark/php-rr)
-        file: Dockerfile.php-rr # Path to Dockerfile for php-rr relative to context
+        file: dockerfile-rr # Path to Dockerfile for php-rr relative to context
         platforms: linux/amd64
         push: true
         tags: ${{ steps.meta-rr.outputs.tags }}
@@ -87,7 +87,7 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: . # Context is the root of the checked-out repository (php-rr-benchmark/php-rr)
-        file: Dockerfile.php-fpm # Path to Dockerfile for php-fpm relative to context
+        file: dockerfile-fpm # Path to Dockerfile for php-fpm relative to context
         platforms: linux/amd64
         push: true
         tags: ${{ steps.meta-fpm.outputs.tags }}
