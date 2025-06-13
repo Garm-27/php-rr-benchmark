@@ -1,0 +1,64 @@
+FROM composer:latest AS composer
+
+# Base image
+FROM php:8.4-fpm-alpine AS base
+
+# Install system dependencies
+RUN apk add --no-cache \
+    libzip-dev \
+    oniguruma-dev \
+    linux-headers 
+
+#$PHPIZE_DEPS if needed  
+# Install PHP extensions 
+RUN docker-php-ext-install \
+    mbstring \
+    zip \
+    sockets
+
+# Fetch composer
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /app
+
+# Env optimizations, prod if needed
+FROM base AS dev
+
+# Copy composer files first (for better caching)
+COPY composer.json composer.lock ./
+
+# Install dependencies (no dev dependencies)
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+
+# Copy application code
+COPY . .
+
+# Run composer scripts
+RUN composer run-script post-install-cmd
+
+# Set environment variables
+ENV APP_ENV=prod
+
+ENV APP_DEBUG=0
+
+# Expose port
+EXPOSE 9000
+
+# Switch to non root user
+RUN adduser -u 1000 -D appuser
+USER appuser
+
+# Set entrypoint
+ENTRYPOINT ["php-fpm"]
+
+
+
+
+
+
+
+
+
+
+

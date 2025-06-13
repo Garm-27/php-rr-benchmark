@@ -1,0 +1,43 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Composer
+/vendor
+composer.phar
+
+# Symfony
+/var/*
+!/var/cache
+!/var/log
+/var/cache/*
+!/var/cache/.gitkeep
+/var/log/*
+!/var/log/.gitkeep
+
+# IDE
+.idea
+.vscode
+*.sublime-*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Tests
+/tests
+phpunit.xml
+.phpunit.result.cache
+
+# Misc
+*.log
+*.md
+!composer.json
+!composer.lock
+!symfony.lock 

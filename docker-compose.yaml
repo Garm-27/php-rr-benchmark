@@ -1,0 +1,92 @@
+services:
+# Backend
+
+  # Caddy API Gateway
+  gw:
+    image: caddy:2-alpine
+    container_name: gw
+    environment:
+      - TZ=Africa/Egypt
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./infra/Caddyfile:/etc/caddy/Caddyfile
+    restart: unless-stopped
+  
+  # PHP Symfony with roadrunner
+  php-rr:
+    image: php-rr:latest
+    container_name: php-rr
+    restart: unless-stopped
+    environment:
+      RR_HTTP_ADDRESS: ":8080"
+      RR_HTTP_POOL_NUM_WORKERS: 8
+      RR_HTTP_POOL_ALLOCATE_TIMEOUT: "60s"
+      RR_HTTP_POOL_DESTROY_TIMEOUT: "60s"
+      RR_HTTP_POOL_SUPERVISOR_EXEC_TTL: "300s"
+      RR_HTTP_POOL_MAX_JOBS: 1000
+  
+  # NGINX webserver
+  nginx-fpm:
+    image: nginx:latest
+    container_name: nginx-fpm
+    restart: unless-stopped
+    volumes:
+      - ./infra/nginx.conf:/etc/nginx/nginx.conf:ro
+
+  # Vanilla PHP Symfony (fpm)
+  php-fpm:
+    image: php-fpm:latest
+    container_name: php-fpm
+    restart: unless-stopped
+    environment:
+      PHP_FPM_PM: dynamic           # Process manager type
+      PHP_FPM_PM_MAX_CHILDREN: 8   # Maximum number of child processes
+      PHP_FPM_PM_START_SERVERS: 2   # Number of child processes to start
+      PHP_FPM_PM_MIN_SPARE_SERVERS: 2  # Minimum number of idle processes
+      PHP_FPM_PM_MAX_SPARE_SERVERS: 6 # Maximum number of idle processes
+
+# DB
+
+  # Redis but FOSSIER
+  valkey:
+    image: bitnami/valkey:latest
+    container_name: rate-limiter-bucket
+    restart: unless-stopped
+    environment:
+      ALLOW_EMPTY_PASSWORD: yes
+
+# Monitoring
+
+  # Grafana for visualization
+  #grafana:
+  #  container_name: grafana
+  #  environment:
+  #    - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+  #    - GF_AUTH_ANONYMOUS_ENABLED=true
+  #    - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+  #    - GF_FEATURE_TOGGLES_ENABLE=alertingSimplifiedRouting,alertingQueryAndExpressionsStepMode
+  #  entrypoint:
+  #    - sh
+  #    - -euc
+  #    - |
+  #      mkdir -p /etc/grafana/provisioning/datasources
+  #      cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
+  #      apiVersion: 1
+  #      datasources:
+  #      - name: Loki
+  #        type: loki
+  #        access: proxy 
+  #        orgId: 1
+  #        url: http://loki:3100
+  #        basicAuth: false
+  #        isDefault: true
+  #        version: 1
+  #        editable: false
+  #      EOF
+  #      /run.sh
+  #  image: grafana/grafana:latest
+  #  ports:
+  #    - "3000:3000"
+
+

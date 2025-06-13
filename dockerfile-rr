@@ -1,0 +1,75 @@
+# Roadrunner image, brings PHP out of the stone age (-■_■)
+FROM ghcr.io/roadrunner-server/roadrunner:2025.1.1 AS roadrunner
+
+# Composer image because PHP doesn't come with a package manager -_-
+FROM composer:latest AS composer
+
+# Base image
+FROM php:8.4-cli-alpine AS base
+
+# Install system dependencies
+RUN apk add --no-cache \
+    libzip-dev \
+    oniguruma-dev \
+    linux-headers 
+#$PHPIZE_DEPS if needed
+    
+# Install PHP extensions, because system dependencies aren't enough already ☜(ಠ_ಠ☜)
+RUN docker-php-ext-install \
+    mbstring \
+    zip \
+    sockets
+
+# Fetch composer, to install even more stuff because system dependencies AND PHP extensions also aren't enough (╯°□°)╯︵ ┻━┻
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /app
+
+# Env optimizations, prod if needed
+FROM base AS dev
+
+# Copy composer files first (for better caching)
+COPY composer.json composer.lock ./
+
+# Install dependencies (no dev dependencies)
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+
+# Fetch roadrunner
+COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
+
+# Copy application code
+COPY . .
+
+# For some reason I need this, hmmmm
+RUN composer run-script post-install-cmd
+
+# Set app env
+ENV APP_ENV=prod
+
+# I don't like debugging, YOLO
+ENV APP_DEBUG=0
+
+# Set the Symfony runtime, probably redundant since it's set in .rr.yaml
+ENV APP_RUNTIME=Runtime\RoadRunnerSymfonyNyholm\Runtime
+
+# Expose port
+EXPOSE 8080
+
+# Switch to non root user, cause security is top priority (I am lying) 
+RUN adduser -u 1000 -D appuser
+USER appuser
+
+# Set entrypoint
+ENTRYPOINT ["rr", "serve"]
+
+
+
+
+
+
+
+
+
+
+
