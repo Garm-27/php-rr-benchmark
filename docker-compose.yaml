@@ -15,7 +15,7 @@ services:
   
   # PHP Symfony with roadrunner
   php-rr:
-    image: php-rr:latest
+    image: ghcr.io/garm-27/php-rr-benchmark-php-rr:latest
     container_name: php-rr
     restart: unless-stopped
     environment:
@@ -36,7 +36,7 @@ services:
 
   # Vanilla PHP Symfony (fpm)
   php-fpm:
-    image: php-fpm:latest
+    image: ghcr.io/garm-27/php-rr-benchmark-php-fpm:latest
     container_name: php-fpm
     restart: unless-stopped
     environment:
