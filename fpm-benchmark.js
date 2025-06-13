@@ -5,8 +5,8 @@ import { check, sleep } from 'k6';
 
 export const options = {
   stages: [
-    { duration: '30s', target: 20 }, // Ramp up to 20 users
-    { duration: '1m', target: 20 },  // Stay at 20 users
+    { duration: '30s', target: __ENV.VU || 20 }, // Ramp up to 20 users
+    { duration: '1m', target: __ENV.VU || 20 },  // Stay at 20 users
     { duration: '30s', target: 0 },  // Ramp down to 0 users
   ],
   thresholds: {
