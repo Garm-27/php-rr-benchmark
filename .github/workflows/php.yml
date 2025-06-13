@@ -22,20 +22,11 @@ jobs:
     name: Lint PHP Code
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
+    - uses: actions/checkout@v3
+    - uses: php-actions/composer@v6 # or alternative dependency management
+    - uses: php-actions/phpstan@v3
       with:
-        php-version: '8.4' # Use PHP 8.4 as mentioned in README
-        tools: composer, php-cs-fixer
-
-    - name: Install Composer dependencies
-      run: composer install --no-dev --optimize-autoloader
-
-    - name: Run PHP-CS-Fixer
-      run: php-cs-fixer fix --diff --dry-run --verbose
+        path: src/
 
   build-and-push-images:
     name: Build and Push Docker Images
