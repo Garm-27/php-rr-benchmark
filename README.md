@@ -54,6 +54,36 @@ k6 run rr-benchmark.js
 k6 run fpm-benchmark.js
 ```
 
+## Benchmark Results
+
+Here are the results from the K6 benchmark tests. These tests were run with 20 virtual users (VUs) for a duration of 2 minutes, including ramp-up and ramp-down phases.
+
+### RoadRunner Benchmark Results
+
+![RoadRunner K6 Benchmark Result](docs/roadrunner_k6_result.png)
+
+**Key Observations for RoadRunner:**
+- **http_req_duration**: The 95th percentile (p(95)) for request duration was approximately **34.93ms**. The average (avg) was **31.2ms**.
+- **http_reqs**: RoadRunner handled **1770 requests**, achieving a throughput of **14.6608 requests/s**.
+- **Checks Succeeded**: 100% of checks passed, indicating stable performance and no errors.
+
+### PHP-FPM Benchmark Results
+
+![PHP-FPM K6 Benchmark Result](docs/fpm_k6_result.png)
+
+**Key Observations for PHP-FPM:**
+- **http_req_duration**: The 95th percentile (p(95)) for request duration was approximately **81.87ms**. The average (avg) was **71.83ms**.
+- **http_reqs**: PHP-FPM handled **1700 requests**, achieving a throughput of **14.1545 requests/s**.
+- **Checks Succeeded**: 100% of checks passed, indicating stable performance and no errors.
+
+### Summary Comparison
+
+From these benchmark runs, RoadRunner consistently demonstrated:
+- **Lower Response Times**: Significantly lower average and 95th percentile request durations compared to PHP-FPM, indicating faster processing.
+- **Similar Throughput**: Both RoadRunner and PHP-FPM handled a similar number of requests within the given duration, but RoadRunner achieved this with better latency.
+
+This confirms the expected performance benefits of using RoadRunner for persistent PHP applications.
+
 ## Expected Results
 
 You should see significant performance improvements with RoadRunner:
